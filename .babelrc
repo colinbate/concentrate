@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "ios": "5.1"
+      },
+      "modules": "commonjs"
+    }]
+  ]
+}

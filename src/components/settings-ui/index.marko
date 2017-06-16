@@ -1,0 +1,123 @@
+class {
+  onCreate() {
+    this.state = {
+      open: false
+    };
+  }
+  handleKey(ev) {
+    if (ev.key === ',' && ev.metaKey) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this.open();
+    } else if (ev.keyCode === 27) {
+      this.close();
+    }
+  }
+  open() {
+    this.setState('open', true);
+  }
+  close() {
+    this.setState('open', false);
+  }
+  clickBg(ev) {
+    if (ev && ev.target && ev.target.classList.contains('settings')) {
+      this.close();
+    }
+  }
+  onMount() {
+    document.body.addEventListener('keydown', ev => this.handleKey(ev));
+  }
+  chooseCardType(type) {
+    this.emit('set-card-type', type);
+    this.setState('open', false);
+  }
+  close() {
+    this.setState('open', false);
+  }
+}
+
+style {
+  .settings {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    text-align: center;
+    display: none;
+  }
+  .container {
+    max-width: 95%;
+    max-height: 95%;
+    overflow-y: auto;
+    width: 400px;
+    margin: auto;
+    background: #fff;
+    color: #000;
+    border: 5px solid #dbe129;
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    padding: 0 10px;
+  }
+  .settings.open {
+    display: block;
+    display: flex;
+  }
+  h2 {
+    text-align: center;
+    font-size: 1.2em;
+  }
+  .btn {
+    display: block;
+    border: 0;
+    padding: 15px 30px;
+    margin: 10px 0;
+    font-size: 1em;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .choice {
+    background: #00c0f3;
+    color: #fff;
+  }
+  .close {
+    background: #6dd08e;
+    color: #fff;
+    margin-top: 30px;
+  }
+  .trigger {
+    z-index: 100;
+    border: 0;
+    background: none;
+    width: 32px;
+    height: 32px;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    padding: 8px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+  .trigger span {
+    font-size: 16px;
+  }
+}
+
+<div>
+  <button.trigger type="button" on-click('open')><span class="icon-cog"></span></button>
+  <div.settings class={open: state.open} on-click('clickBg')>
+    <div.container>
+      <h2>Choose Card Type</h2>
+      <button.btn.choice type="button" on-click('chooseCardType', 'letters')>Letters</button>
+      <button.btn.choice type="button" on-click('chooseCardType', 'numbers')>Numbers</button>
+      <button.btn.choice type="button" on-click('chooseCardType', 'geeky')>Geeky</button>
+      <button.btn.choice type="button" on-click('chooseCardType', 'emoticons')>Emoticons</button>
+      <button.btn.close type="button" on-click('close')>Close</button>
+    </div>
+  </div>
+</div>

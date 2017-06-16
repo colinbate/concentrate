@@ -1,0 +1,210 @@
+import shuffle from 'array-shuffle';
+import assign from 'object-assign';
+import decks from './decks';
+import storage from './storage';
+import testvmin from './testvmin';
+
+class {
+  onCreate() {
+    this.state = {
+      order: null,
+      cards: null,
+      deckType: null,
+      first: null,
+      victory: false,
+      manualSize: null,
+      manualFontSize: null
+    };
+  }
+
+  shuffleDeck() {
+    const order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    return shuffle(order);
+  }
+
+  onMount() {
+    this.reviewTimer = null;
+    this.second = null;
+    const deckType = storage.get('deckType') || 'numbers';
+    const deck = decks[deckType]();
+    this.setState({
+      deckType,
+      order: this.shuffleDeck(),
+      cards: deck
+    });
+  }
+
+  onUpdate() {
+    if (this.useJsSize === undefined) {
+      const test = testvmin(this.el.querySelector('.card-table'));
+      this.useJsSize = !test;
+    }
+    if (this.useJsSize) {
+      const minSize = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+      this.setState({
+        manualSize: minSize,
+        manualFontSize: minSize * 0.15
+      });
+    }
+  }
+
+  onResize() {
+    console.log(`${document.body.clientWidth} x ${document.body.clientHeight}`);
+  }
+
+  setCardState(index, delta) {
+    const card = this.state.cards[index];
+    this.setState('cards', this.state.cards.map((x, i) => i === index ? assign({}, card, delta) : x));
+  }
+
+  resetReview() {
+    this.setCardState(this.second, {show: false});
+    this.setCardState(this.state.first, {show: false});
+    this.setState({
+      first: null
+    });
+    this.second = null;
+    this.reviewTimer = null;
+  }
+
+  setCardType(type) {
+    storage.set('deckType', type);
+    this.setState({
+      cards: decks[type](),
+      deckType: type
+    });
+  }
+
+  restart() {
+    this.setState({
+      cards: decks[this.state.deckType](),
+      order: this.shuffleDeck(),
+      victory: false
+    });
+  }
+
+  checkDidWin() {
+    for (let ind = 0; ind < this.state.cards.length; ind += 1) {
+      if (!this.state.cards[ind].matched) {
+        return;
+      }
+    }
+    this.setState('victory', true);
+  }
+
+  guess(index) {
+    if (this.reviewTimer) {
+      clearTimeout(this.reviewTimer);
+      this.resetReview();
+    }
+    const card = this.state.cards[index];
+    this.setCardState(index, {show: true});
+    if (this.state.first === null) {
+      this.setState('first', index);
+    } else if (card.value === this.state.cards[this.state.first].value) {
+      this.setCardState(index, {matched: true});
+      this.setCardState(this.state.first, {matched: true});
+      this.setState('first', null);
+      this.checkDidWin();
+    } else {
+      this.second = index;
+      this.reviewTimer = setTimeout(() => {
+        this.resetReview();
+      }, 1500);
+    }
+  }
+}
+
+style {
+  .card-table {
+    margin: auto;
+    display: inline-block;
+    width: 100vmin;
+  }
+  .wrap {
+    margin: auto;
+  }
+  .card-table:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .vwrap {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    display: block;
+    display: flex;
+    visibility: hidden;
+  }
+  .vwrap.open {
+    visibility: visible;
+  }
+  .victory {
+    margin: auto;
+    border-radius: 6px;
+    padding: 20px 20px 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 32px;
+    max-width: 400px;
+    min-width: 400px;
+    position: relative;
+    text-align: center;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s ease-in;
+    transition: opacity 0.5s ease-in;
+    overflow: hidden;
+  }
+  .vwrap.open .victory {
+    opacity: 1;
+    -webkit-transition: opacity 0.5s ease-in;
+    transition: opacity 0.5s ease-in;
+  }
+  .icon-trophy {
+    color: yellow;
+    font-size: 160px;
+    position: absolute;
+    top: -10px;
+    left: -12px;
+  }
+  .win {
+    display: block;
+    align-items: center;
+    text-align: center;
+  }
+  .win span {
+    line-height: 1;
+  }
+  .replay {
+    border: 0;
+    background: none;
+    padding: 10px;
+    font-size: 32px;
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-top: 20px;
+    cursor: pointer;
+    color: white;
+  }
+}
+
+<div.wrap>
+  <div.card-table style={width: state.manualSize, height: state.manualSize, fontSize: state.manualFontSize}>
+    <for(index in state.order)>
+      <memory-card ${state.cards[index]} on-guess('guess', index)/>
+    </for>
+  </div>
+  <div.vwrap class={open: state.victory}>
+    <div.victory>
+      <div.win><span class="icon-trophy"></span><span>You Win</span></div>
+      <button.replay type="button" on-click('restart')><span class="icon-again"></span></button>
+    </div>
+  </div>
+  <settings-ui on-set-card-type('setCardType')/>
+</div>

@@ -1,0 +1,49 @@
+class {
+  onClick(show) {
+    if (!show) {
+      this.emit('guess');
+    }
+  }
+}
+
+style {
+  .card {
+    background-color: #666;
+    border: 0;
+    color: #fff;
+    width: 24%;
+    height: 24%;
+    width: 24vmin;
+    height: 24vmin;
+    display: flex;
+    margin:0.5%;
+    float: left;
+    font-size: 1em;
+    padding: 0;
+  }
+  .card:focus {
+    outline: none;
+  }
+
+  .card:nth-child(4n+1) {
+    clear: left;
+  }
+
+  .card .value {
+    font-size: 1em;
+    font-size: 15vmin;
+    display: block;
+    margin: auto;
+  }
+
+  .card .value.matched {
+    color: #79ed7b;
+  }
+}
+
+<button.card type="button" on-click('onClick', input.show)>
+  <span.value
+    if(input.show)
+    class=[input.matched && 'matched', input.klass]
+  >${input.value.toString().length === 1 ? input.value : ''}</span>
+</button>
