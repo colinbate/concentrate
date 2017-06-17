@@ -48,10 +48,6 @@ class {
     }
   }
 
-  onResize() {
-    console.log(`${document.body.clientWidth} x ${document.body.clientHeight}`);
-  }
-
   setCardState(index, delta) {
     const card = this.state.cards[index];
     this.setState('cards', this.state.cards.map((x, i) => i === index ? assign({}, card, delta) : x));
@@ -71,7 +67,10 @@ class {
     storage.set('deckType', type);
     this.setState({
       cards: decks[type](),
-      deckType: type
+      order: this.shuffleDeck(),
+      deckType: type,
+      victory: false,
+      first: null
     });
   }
 
@@ -79,7 +78,8 @@ class {
     this.setState({
       cards: decks[this.state.deckType](),
       order: this.shuffleDeck(),
-      victory: false
+      victory: false,
+      first: null
     });
   }
 
