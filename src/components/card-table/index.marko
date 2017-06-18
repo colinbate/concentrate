@@ -13,7 +13,9 @@ class {
       first: null,
       victory: false,
       manualSize: null,
-      manualFontSize: null
+      manualFontSize: null,
+      bgPhoto: null,
+      settings: {}
     };
   }
 
@@ -22,15 +24,29 @@ class {
     return shuffle(order);
   }
 
+  getBgPhoto(sOverride) {
+    const minSize = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+    const now = Date.now();
+    const settings = sOverride || this.state.settings;
+    const bgPhoto = settings.revealMode ? `url(https://unsplash.it/${minSize}/?random&${now})` : null;
+    return bgPhoto;
+  }
+
   onMount() {
     this.reviewTimer = null;
     this.second = null;
-    const deckType = storage.get('deckType') || 'numbers';
-    const deck = decks[deckType]();
+    const deckType = storage.get('deckType', true) || 'numbers';
+    let settings = storage.get('settings') || {};
+    if (!settings.deckType) {
+      settings = assign({}, settings, {deckType});
+    }
+    const deck = decks[settings.deckType]();
+    const bgPhoto = this.getBgPhoto(settings);
     this.setState({
-      deckType,
+      settings,
       order: this.shuffleDeck(),
-      cards: deck
+      cards: deck,
+      bgPhoto
     });
   }
 
@@ -59,27 +75,34 @@ class {
     this.setState({
       first: null
     });
+    if (this.state.settings.hardMode) {
+      this.setState({
+        cards: decks[this.state.settings.deckType]()
+      });
+    }
     this.second = null;
     this.reviewTimer = null;
   }
 
-  setCardType(type) {
-    storage.set('deckType', type);
+  updateSettings(settings) {
+    storage.set('settings', settings);
     this.setState({
-      cards: decks[type](),
+      cards: decks[settings.deckType](),
       order: this.shuffleDeck(),
-      deckType: type,
+      settings,
       victory: false,
-      first: null
+      first: null,
+      bgPhoto: this.getBgPhoto(settings)
     });
   }
 
   restart() {
     this.setState({
-      cards: decks[this.state.deckType](),
+      cards: decks[this.state.settings.deckType](),
       order: this.shuffleDeck(),
       victory: false,
-      first: null
+      first: null,
+      bgPhoto: this.getBgPhoto()
     });
   }
 
@@ -120,6 +143,7 @@ style {
     margin: auto;
     display: inline-block;
     width: 100vmin;
+    background-size: cover;
   }
   .wrap {
     margin: auto;
@@ -195,9 +219,9 @@ style {
 }
 
 <div.wrap>
-  <div.card-table style={width: state.manualSize, height: state.manualSize, fontSize: state.manualFontSize}>
+  <div.card-table style={width: state.manualSize, height: state.manualSize, fontSize: state.manualFontSize, backgroundImage: state.bgPhoto}>
     <for(index in state.order)>
-      <memory-card ${state.cards[index]} on-guess('guess', index)/>
+      <memory-card reveal=state.settings.revealMode ${state.cards[index]} on-guess('guess', index)/>
     </for>
   </div>
   <div.vwrap class={open: state.victory}>
@@ -206,5 +230,5 @@ style {
       <button.replay type="button" on-click('restart')><span class="icon-again"></span></button>
     </div>
   </div>
-  <settings-ui on-set-card-type('setCardType')/>
+  <settings-ui settings=state.settings on-settings-change('updateSettings')/>
 </div>

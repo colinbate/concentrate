@@ -8,14 +8,15 @@ style {
     text-align: center;
     display: flex;
     font-family: sans-serif;
+    overflow: hidden;
   }
   @font-face {
     font-family: 'concentrate';
-    src:  url('fonts/concentrate.eot?dn1pn3');
-    src:  url('fonts/concentrate.eot?dn1pn3#iefix') format('embedded-opentype'),
-      url('fonts/concentrate.ttf?dn1pn3') format('truetype'),
-      url('fonts/concentrate.woff?dn1pn3') format('woff'),
-      url('fonts/concentrate.svg?dn1pn3#concentrate') format('svg');
+    src:  url('fonts/concentrate.injujr.eot');
+    src:  url('fonts/concentrate.injujr.eot#iefix') format('embedded-opentype'),
+      url('fonts/concentrate.injujr.ttf') format('truetype'),
+      url('fonts/concentrate.injujr.woff') format('woff'),
+      url('fonts/concentrate.injujr.svg#concentrate') format('svg');
     font-weight: normal;
     font-style: normal;
   }
@@ -45,6 +46,9 @@ style {
     -moz-osx-font-smoothing: grayscale;
   }
 
+  .icon-image:before {
+    content: "\e90d";
+  }
   .icon-again:before {
     content: "\e984";
   }
@@ -53,6 +57,9 @@ style {
   }
   .icon-trophy:before {
     content: "\e99e";
+  }
+  .icon-menu:before {
+    content: "\e9bd";
   }
   .icon-happy:before {
     content: "\e9df";
@@ -78,8 +85,17 @@ style {
   .icon-wondering:before {
     content: "\e9fb";
   }
+  .icon-close:before {
+    content: "\ea0d";
+  }
   .icon-checkmark:before {
     content: "\ea10";
+  }
+  .icon-checked:before {
+    content: "\ea52";
+  }
+  .icon-unchecked:before {
+    content: "\ea53";
   }
   .icon-github:before {
     content: "\eab0";

@@ -20,6 +20,7 @@ style {
     float: left;
     font-size: 1em;
     padding: 0;
+    visibility: visible;
   }
   .card:focus {
     outline: none;
@@ -36,14 +37,21 @@ style {
     margin: auto;
   }
 
-  .card .value.matched {
+  .card.matched .value {
     color: #79ed7b;
+  }
+
+  .card.matched.reveal {
+    visibility: hidden;
   }
 }
 
-<button.card type="button" on-click('onClick', input.show)>
+<button.card
+  type="button"
+  on-click('onClick', input.show)
+  class=[input.matched && 'matched', input.reveal && 'reveal']>
   <span.value
     if(input.show)
-    class=[input.matched && 'matched', input.klass]
+    class=[input.klass]
   >${input.value.toString().length === 1 ? input.value : ''}</span>
 </button>

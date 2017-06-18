@@ -1,3 +1,5 @@
+import assign from 'object-assign';
+
 class {
   onCreate() {
     this.state = {
@@ -20,16 +22,18 @@ class {
     this.setState('open', false);
   }
   clickBg(ev) {
-    if (ev && ev.target && ev.target.classList.contains('settings')) {
+    if (ev && ev.target && ev.target.classList.contains('overlay')) {
       this.close();
     }
+  }
+  toggle(key, value) {
+    this.emit('settings-change', assign({}, this.input.settings, {[key]: value}));
   }
   onMount() {
     document.body.addEventListener('keydown', ev => this.handleKey(ev));
   }
   chooseCardType(type) {
-    this.emit('set-card-type', type);
-    this.setState('open', false);
+    this.emit('settings-change', assign({}, this.input.settings, {deckType: type}));
   }
   close() {
     this.setState('open', false);
@@ -37,7 +41,7 @@ class {
 }
 
 style {
-  .settings {
+  .overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -45,79 +49,111 @@ style {
     bottom: 0;
     z-index: 200;
     text-align: center;
-    display: none;
+    background-color: rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transition: opacity 0.2s ease-in;
+    transition: opacity 0.2s ease-in;
   }
-  .container {
-    max-width: 95%;
-    max-height: 95%;
+  .menu {
+    position: fixed;
+    background-color: #00c0f3;
     overflow-y: auto;
-    width: 400px;
-    margin: auto;
-    background: #fff;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100%;
     color: #000;
-    border: 5px solid #dbe129;
-    display: flex;
-    flex-direction: column;
-    z-index: 200;
+    z-index: 202;
     padding: 0 10px;
+    -webkit-transition: all 0.5s;
+	  transition: all 0.5s;
+    text-align: left;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
   }
-  .settings.open {
-    display: block;
-    display: flex;
+  .menu.open {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  .overlay.open {
+    opacity: 1;
+    visibility: visible;
   }
   h2 {
-    text-align: center;
+    text-align: left;
     font-size: 1.2em;
+    padding-left: 16px;
+    margin: 25px 0 5px;
   }
   .btn {
     display: block;
     border: 0;
-    padding: 15px 30px;
-    margin: 10px 0;
+    padding: 16px;
+    margin: 5px 0;
     font-size: 1em;
     cursor: pointer;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
+    background: transparent;
+    color: #fff;
   }
   .choice {
-    background: #00c0f3;
     color: #fff;
+    text-align: left;
+  }
+  .choice:hover,
+  .choice:focus,
+  .choice:active,
+  .choice.active {
+    background: #008dc0;
   }
   .close {
-    background: #6dd08e;
-    color: #fff;
-    margin-top: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: auto;
+    padding: 16px;
+    margin: 0;
   }
   .trigger {
     z-index: 100;
     border: 0;
     background: none;
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     position: fixed;
-    bottom: 5px;
-    right: 5px;
+    top: 5px;
+    left: 5px;
     padding: 8px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     cursor: pointer;
   }
   .trigger span {
-    font-size: 16px;
+    font-size: 32px;
+  }
+  .rep {
+    margin-right: 1em;
+    display: inline-block;
+    width: 16px;
+    line-height: 1;
   }
 }
 
 <div>
-  <button.trigger type="button" on-click('open')><span class="icon-cog"></span></button>
-  <div.settings class={open: state.open} on-click('clickBg')>
-    <div.container>
-      <h2>Choose Card Type</h2>
-      <button.btn.choice type="button" on-click('chooseCardType', 'letters')>Letters</button>
-      <button.btn.choice type="button" on-click('chooseCardType', 'numbers')>Numbers</button>
-      <button.btn.choice type="button" on-click('chooseCardType', 'geeky')>Geeky</button>
-      <button.btn.choice type="button" on-click('chooseCardType', 'emoticons')>Emoticons</button>
-      <button.btn.close type="button" on-click('close')>Close</button>
-    </div>
+  <button.trigger type="button" on-click('open')><span class="icon-menu"></span></button>
+  <div.overlay class={open: state.open} on-click('clickBg')></div>
+  <div.menu class={open: state.open}>
+    <button.btn.close type="button" on-click('close')><span class="icon-close"></span></button>
+    <h2>Card Type</h2>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'letters' && 'active'] on-click('chooseCardType', 'letters')><span class="rep">A</span>Letters</button>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'numbers' && 'active'] on-click('chooseCardType', 'numbers')><span class="rep">1</span>Numbers</button>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'geeky' && 'active'] on-click('chooseCardType', 'geeky')><span class="rep icon-tux"></span>Geeky</button>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'emoticons' && 'active'] on-click('chooseCardType', 'emoticons')><span class="rep icon-happy"></span>Emoticons</button>
+    <h2>Options</h2>
+    <toggle-switch checked=input.settings.hardMode on-toggle('toggle', 'hardMode') label="Hide all matches on incorrect guess"></toggle-switch>
+    <toggle-switch checked=input.settings.revealMode on-toggle('toggle', 'revealMode') label="Remove matches to reveal photo"></toggle-switch>
   </div>
 </div>

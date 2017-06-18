@@ -1,0 +1,43 @@
+class {
+  onClick(current) {
+    this.emit('toggle', !current)
+  }
+}
+
+style {
+  .toggle {
+    display: block;
+    border: 0;
+    padding: 16px;
+    margin: 5px 0;
+    font-size: 1em;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    background: transparent;
+    color: #fff;
+    text-align: left;
+    position: relative;
+  }
+  .toggle:hover,
+  .toggle:focus,
+  .toggle:active {
+    background: #008dc0;
+  }
+  .switch {
+    position: absolute;
+    margin-right: 1em;
+    top: 50%;
+    margin-top: -8px;
+  }
+  .label {
+    display: block;
+    margin-left: 32px;
+  }
+}
+
+<button.toggle type="button" on-click('onClick', input.checked)>
+  <span class=['switch', input.checked ? 'icon-checked' : 'icon-unchecked']></span>
+  <span class="label">${input.label}</span>
+</button>
