@@ -152,6 +152,8 @@ style {
     <button.btn.choice type="button" class=[input.settings.deckType === 'numbers' && 'active'] on-click('chooseCardType', 'numbers')><span class="rep">1</span>Numbers</button>
     <button.btn.choice type="button" class=[input.settings.deckType === 'geeky' && 'active'] on-click('chooseCardType', 'geeky')><span class="rep icon-tux"></span>Geeky</button>
     <button.btn.choice type="button" class=[input.settings.deckType === 'emoticons' && 'active'] on-click('chooseCardType', 'emoticons')><span class="rep icon-happy"></span>Emoticons</button>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'photos' && 'active'] on-click('chooseCardType', 'photos')><span class="rep icon-image"></span>Photos 1</button>
+    <button.btn.choice type="button" class=[input.settings.deckType === 'photos2' && 'active'] on-click('chooseCardType', 'photos2')><span class="rep icon-image"></span>Photos 2</button>
     <h2>Options</h2>
     <toggle-switch checked=input.settings.hardMode on-toggle('toggle', 'hardMode') label="Hide all matches on incorrect guess"></toggle-switch>
     <toggle-switch checked=input.settings.revealMode on-toggle('toggle', 'revealMode') label="Remove matches to reveal photo"></toggle-switch>

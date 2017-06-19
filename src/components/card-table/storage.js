@@ -24,5 +24,8 @@ function testStorage () {
 }
 
 testStorage();
-exports.get = (key, safe) => JSON.parse(safe && `"${store.getItem(key)}"` || store.getItem(key) || '""');
+exports.get = (key, safe) => {
+  const raw = store.getItem(key);
+  return JSON.parse(safe && raw && `"${raw}"` || raw || '""');
+};
 exports.set = (key, value) => store.setItem(key, JSON.stringify(value));

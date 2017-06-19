@@ -21,6 +21,7 @@ style {
     font-size: 1em;
     padding: 0;
     visibility: visible;
+    position: relative;
   }
   .card:focus {
     outline: none;
@@ -35,13 +36,43 @@ style {
     font-size: 15vmin;
     display: block;
     margin: auto;
+    background-size: cover;
+    visibility: hidden;
+  }
+
+  .card .value.show {
+    visibility: visible;
+  }
+
+  .card .value.full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   .card.matched .value {
     color: #79ed7b;
   }
 
-  .card.matched.reveal {
+  .match {
+    color: #79ed7b;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: none;
+    font-size: 32px;
+    font-size: 5vmin;
+  }
+
+  .card.matched .value.full + .match {
+    display: block;
+  }
+
+  .card.matched.reveal,
+  .card.matched.reveal .value,
+  .card.matched.reveal .value.show {
     visibility: hidden;
   }
 }
@@ -49,9 +80,11 @@ style {
 <button.card
   type="button"
   on-click('onClick', input.show)
+  style=input.cardStyle
   class=[input.matched && 'matched', input.reveal && 'reveal']>
   <span.value
-    if(input.show)
-    class=[input.klass]
+    style=input.valueStyle
+    class=[input.klass, input.show && 'show']
   >${input.value.toString().length === 1 ? input.value : ''}</span>
+  <span.match class="icon-checkmark"></span>
 </button>
